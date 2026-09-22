@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="robots" content="noindex" />
+<title>404 · Page not found</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%236366f1'/><stop offset='1' stop-color='%2322d3ee'/></linearGradient></defs><rect width='64' height='64' rx='14' fill='url(%23g)'/><text x='32' y='44' font-size='30' font-family='monospace' font-weight='bold' text-anchor='middle' fill='white'>L</text></svg>" />
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    min-height: 100vh; display: flex; align-items: center; justify-content: center;
+    background: #07080d; color: #e8eaf2;
+    font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+    text-align: center; padding: 24px;
+  }
+  .code {
+    font-family: Consolas, monospace; font-size: clamp(5rem, 18vw, 9rem); font-weight: 700; line-height: 1;
+    background: linear-gradient(120deg, #6366f1, #22d3ee);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  p { color: #9aa3b5; margin: 18px 0 34px; font-size: 1.02rem; }
+  .actions { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+  a {
+    display: inline-block; text-decoration: none; padding: 12px 26px; border-radius: 12px;
+    font-weight: 600; font-size: 0.95rem; transition: transform .25s ease;
+  }
+  a:hover { transform: translateY(-3px); }
+  .primary { background: linear-gradient(120deg, #6366f1, #22d3ee); color: #fff; }
+  .ghost { border: 1px solid rgba(255,255,255,.12); color: #e8eaf2; background: rgba(255,255,255,.04); }
+</style>
+</head>
+<body>
+<main>
+  <div class="code">404</div>
+  <p>页面不存在 · Page not found</p>
+  <div class="actions">
+    <a class="primary" href="./">返回中文首页</a>
+    <a class="ghost" href="./en/">Go to English site</a>
+  </div>
+</main>
+</body>
+</html>
