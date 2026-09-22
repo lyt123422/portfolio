@@ -31,7 +31,7 @@ personal-site/
 - 统计数字（`data-value`）
 - 项目卡片（复制一个 `<article class="project-card">` 即可新增）
 - 技能 chips
-- 联系邮箱（当前为 2596851255@qq.com，搜索 `mailto:` 可替换）
+- 联系邮箱（当前为 lyt502277@gmail.com，搜索 `mailto:` 可替换）
 
 ## 绑定自定义域名 / Custom domain（待购）
 
