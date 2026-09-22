@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>LYT · 独立开发者</title>
+<meta name="description" content="LYT 的个人网站 —— 独立开发者，AI 产品与应用构建者。" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%236366f1'/><stop offset='1' stop-color='%2322d3ee'/></linearGradient></defs><rect width='64' height='64' rx='14' fill='url(%23g)'/><text x='32' y='44' font-size='30' font-family='monospace' font-weight='bold' text-anchor='middle' fill='white'>L</text></svg>" />
+<script>
+// 英文浏览器访客首次打开时自动跳到英文版（本会话内记住选择，不再跳）
+(function () {
+  try {
+    if (!sessionStorage.getItem("site-lang") && (navigator.language || "").toLowerCase().indexOf("zh") !== 0) {
+      sessionStorage.setItem("site-lang", "en");
+      location.replace("./en/");
+    }
+  } catch (e) {}
+})();
+</script>
+<style>
+  :root {
+    --bg: #07080d;
+    --bg-soft: #0c0e16;
+    --fg: #e8eaf2;
+    --muted: #9aa3b5;
+    --line: rgba(255, 255, 255, 0.08);
+    --card: rgba(255, 255, 255, 0.04);
+    --accent-1: #6366f1;
+    --accent-2: #22d3ee;
+    --grad: linear-gradient(120deg, var(--accent-1), var(--accent-2));
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: auto; }
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", system-ui, sans-serif;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+  ::selection { background: rgba(99, 102, 241, 0.4); }
+
+  /* ---------- 背景层 ---------- */
+  .bg { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
+  .bg::after {
+    content: ""; position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
+    background-size: 56px 56px;
+    mask-image: radial-gradient(ellipse 90% 70% at 50% 0%, black 30%, transparent 75%);
+    -webkit-mask-image: radial-gradient(ellipse 90% 70% at 50% 0%, black 30%, transparent 75%);
+  }
+  .orb {
+    position: absolute; width: 44vmax; height: 44vmax; border-radius: 50%;
+    filter: blur(90px); opacity: 0.5; will-change: transform;
+  }
+  .orb-1 { top: -18%; right: -12%; background: radial-gradient(circle, rgba(99,102,241,0.55), transparent 65%); }
+  .orb-2 { bottom: -22%; left: -14%; background: radial-gradient(circle, rgba(34,211,238,0.35), transparent 65%); }
+
+  /* ---------- 导航 ---------- */
+  .progress {
+    position: fixed; top: 0; left: 0; right: 0; height: 2px; z-index: 100;
+    background: var(--grad); transform: scaleX(0); transform-origin: 0 50%;
+  }
+  .nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 90;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 28px;
+    background: rgba(7, 8, 13, 0.6); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--line);
+  }
+  .logo { font-family: Consolas, monospace; font-weight: 700; font-size: 1.15rem; letter-spacing: 1px;
+    background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent;
+    text-decoration: none; }
+  .nav-links { display: flex; gap: 26px; align-items: center; }
+  .nav-links a { color: var(--muted); text-decoration: none; font-size: 0.92rem; transition: color 0.25s; }
+  .nav-links a:hover { color: var(--fg); }
+  .lang-link { font-family: Consolas, monospace; font-size: 0.8rem !important; letter-spacing: 1px;
+    border: 1px solid var(--line); border-radius: 999px; padding: 4px 12px; }
+
+  /* ---------- 通用布局 ---------- */
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 28px; }
+  section { padding: 110px 0; position: relative; }
+  .kicker {
+    font-family: Consolas, monospace; font-size: 0.8rem; letter-spacing: 3px;
+    color: var(--accent-2); text-transform: uppercase; margin-bottom: 10px;
+  }
+  h2 { font-size: clamp(1.7rem, 3.6vw, 2.5rem); line-height: 1.25; margin-bottom: 22px; }
+  .lead { color: var(--muted); max-width: 640px; font-size: 1.02rem; }
+  .grad-text { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+  /* ---------- Hero ---------- */
+  .hero { min-height: 100vh; display: flex; align-items: center; padding-top: 60px; }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: Consolas, monospace; font-size: 0.8rem; color: var(--muted);
+    border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px; margin-bottom: 26px;
+    background: var(--card);
+  }
+  .hero-badge .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent-2);
+    box-shadow: 0 0 10px var(--accent-2); }
+  .hero h1 { font-size: clamp(2.6rem, 7.5vw, 5.2rem); line-height: 1.12; letter-spacing: -0.02em; }
+  .hero h1 .ht-line1, .hero h1 .ht-mask { display: block; }
+  .hero h1 .ht-mask { overflow: hidden; padding-bottom: 0.08em; margin-bottom: -0.08em; }
+  .hero h1 .ht-line2 { display: inline-block; will-change: transform; }
+  .hero-sub { color: var(--muted); font-size: clamp(1rem, 2vw, 1.2rem); margin-top: 22px; max-width: 560px; }
+  .hero-actions { display: flex; gap: 16px; margin-top: 38px; flex-wrap: wrap; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px; text-decoration: none;
+    padding: 13px 26px; border-radius: 12px; font-size: 0.95rem; font-weight: 600;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    will-change: transform;
+  }
+  .btn:hover { transform: translateY(-3px); }
+  .btn-primary { background: var(--grad); color: #fff; box-shadow: 0 8px 30px rgba(99, 102, 241, 0.35); }
+  .btn-primary:hover { box-shadow: 0 12px 40px rgba(99, 102, 241, 0.5); }
+  .btn-ghost { border: 1px solid var(--line); color: var(--fg); background: var(--card); }
+  .btn-ghost:hover { border-color: rgba(255,255,255,0.25); }
+  .scroll-hint {
+    position: absolute; bottom: 34px; left: 50%; transform: translateX(-50%);
+    color: var(--muted); font-size: 0.78rem; letter-spacing: 2px; display: flex; flex-direction: column;
+    align-items: center; gap: 8px;
+  }
+  .scroll-hint::after {
+    content: ""; width: 1px; height: 34px;
+    background: linear-gradient(var(--accent-2), transparent);
+    animation: drip 1.8s ease-in-out infinite;
+  }
+  @keyframes drip { 0% { transform: scaleY(0); transform-origin: top; } 55% { transform: scaleY(1); transform-origin: top; } 56% { transform-origin: bottom; } 100% { transform: scaleY(0); transform-origin: bottom; } }
+  @media (prefers-reduced-motion: reduce) { .scroll-hint::after { animation: none; } }
+
+  /* ---------- 关于 ---------- */
+  .about-grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 60px; align-items: start; }
+  @media (max-width: 800px) { .about-grid { grid-template-columns: 1fr; gap: 36px; } }
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  .stat { border: 1px solid var(--line); border-radius: 16px; background: var(--card); padding: 22px 18px; }
+  .stat-num { font-size: 2rem; font-weight: 700; font-family: Consolas, monospace; }
+  .stat-suffix { font-size: 1.1rem; color: var(--accent-2); font-weight: 700; }
+  .stat-label { color: var(--muted); font-size: 0.82rem; margin-top: 4px; }
+
+  /* ---------- 跑马灯大字 ---------- */
+  .marquee { padding: 30px 0; overflow: hidden; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .marquee-inner { white-space: nowrap; font-family: Consolas, monospace; font-size: clamp(3rem, 9vw, 7rem);
+    font-weight: 700; line-height: 1.1; will-change: transform; }
+  .marquee-inner span {
+    background: linear-gradient(120deg, rgba(99,102,241,0.75), rgba(34,211,238,0.75));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    padding-right: 0.6em;
+  }
+  .marquee-inner .hollow {
+    background: none; color: transparent;
+    -webkit-text-stroke: 1px rgba(255,255,255,0.22); padding-right: 0.6em;
+  }
+
+  /* ---------- 项目 ---------- */
+  .project-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 22px; margin-top: 14px; }
+  .project-card {
+    border: 1px solid var(--line); border-radius: 18px; background: var(--card);
+    padding: 28px 26px; position: relative; overflow: hidden;
+    transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+    will-change: transform;
+  }
+  .project-card:hover { transform: translateY(-6px); border-color: rgba(99,102,241,0.5);
+    box-shadow: 0 18px 50px rgba(0,0,0,0.45); }
+  .project-card::before {
+    content: ""; position: absolute; inset: 0 0 auto 0; height: 2px;
+    background: var(--grad); opacity: 0; transition: opacity 0.3s ease;
+  }
+  .project-card:hover::before { opacity: 1; }
+  .card-index { font-family: Consolas, monospace; color: var(--muted); font-size: 0.8rem; letter-spacing: 2px; }
+  .project-card h3 { font-size: 1.18rem; margin: 10px 0 8px; }
+  .project-card p { color: var(--muted); font-size: 0.92rem; }
+  .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+  .tag { font-size: 0.72rem; font-family: Consolas, monospace; color: var(--accent-2);
+    border: 1px solid rgba(34,211,238,0.3); border-radius: 999px; padding: 3px 10px; }
+  .card-link { display: inline-block; margin-top: 18px; color: var(--fg); text-decoration: none; font-size: 0.88rem; font-weight: 600; }
+  .card-link:hover { color: var(--accent-2); }
+
+  /* ---------- 技能 ---------- */
+  .chips { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 10px; }
+  .chip {
+    border: 1px solid var(--line); background: var(--card); border-radius: 999px;
+    padding: 10px 20px; font-size: 0.9rem; color: var(--fg);
+    transition: border-color 0.25s ease, transform 0.25s ease; will-change: transform;
+  }
+  .chip:hover { border-color: var(--accent-1); transform: translateY(-2px); }
+
+  /* ---------- 联系 ---------- */
+  .contact { text-align: center; }
+  .contact h2 { font-size: clamp(2.2rem, 5.5vw, 3.6rem); }
+  .contact .lead { margin: 0 auto 36px; }
+  .contact-actions { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+  footer { border-top: 1px solid var(--line); padding: 30px 0; text-align: center;
+    color: var(--muted); font-size: 0.82rem; }
+  footer .mono { font-family: Consolas, monospace; }
+
+  /* 无 JS 时的兜底由 JS 控制初始隐藏，这里不做隐藏，避免 CDN 失败整页空白 */
+</style>
+</head>
+<body>
+
+<div class="bg">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+</div>
+<div class="progress"></div>
+
+<nav class="nav">
+  <!-- ✏️ 改成你的名字/品牌 -->
+  <a class="logo" href="#top">LYT.dev</a>
+  <div class="nav-links">
+    <a href="#about">关于</a>
+    <a href="#projects">项目</a>
+    <a href="#skills">技能</a>
+    <a href="#contact">联系</a>
+    <a class="lang-link" href="./en/" onclick="try{sessionStorage.setItem('site-lang','en')}catch(e){}">EN</a>
+  </div>
+</nav>
+
+<header class="hero" id="top">
+  <div class="wrap">
+    <div class="hero-badge"><span class="dot"></span>可用 · 接受新项目合作</div>
+    <!-- ✏️ 改成你的名字；渐变色部分放在 class="grad-text" 的 span 里 -->
+    <h1 class="hero-title">
+      <span class="ht-line1">你好，我是</span>
+      <span class="ht-mask"><span class="ht-line2 grad-text">LYT</span></span>
+    </h1>
+    <!-- ✏️ 一句话介绍 -->
+    <p class="hero-sub">独立开发者 / AI 产品工程师。从想法到上线，我负责完整链路：产品设计、前后端开发、AI 能力集成与增长运营。</p>
+    <div class="hero-actions">
+      <a class="btn btn-primary" href="#projects">看看我的项目</a>
+      <a class="btn btn-ghost" href="#contact">联系我</a>
+    </div>
+  </div>
+  <div class="scroll-hint">SCROLL</div>
+</header>
+
+<main>
+  <!-- ============ 关于 ============ -->
+  <section id="about">
+    <div class="wrap">
+      <p class="kicker" data-reveal>01 · 关于我</p>
+      <h2 data-split>把想法快速做成<span class="grad-text">能用、有人用</span>的产品</h2>
+      <div class="about-grid">
+        <div>
+          <p class="lead" data-reveal>
+            过去几年我一直以独立开发者身份做产品：AI 内容处理工具、浏览器插件、微信 / 抖音小程序、
+            全栈 Web 应用都有上线经验。我习惯小步快跑——先做出最小可用版本拿到真实反馈，
+            再快速迭代；技术栈以 TypeScript 全栈为主，近一年深度投入 AI 应用开发。
+          </p>
+          <p class="lead" data-reveal style="margin-top: 16px;">
+            除了写代码，我也关注增长：从内容获客到转化漏斗，产品怎么做出来，也要想清楚怎么被人看见。
+          </p>
+        </div>
+        <!-- ✏️ 改成你的真实数据 -->
+        <div class="stats">
+          <div class="stat">
+            <div><span class="stat-num" data-value="12">0</span><span class="stat-suffix">+</span></div>
+            <div class="stat-label">上线产品</div>
+          </div>
+          <div class="stat">
+            <div><span class="stat-num" data-value="6">0</span><span class="stat-suffix">年</span></div>
+            <div class="stat-label">开发经验</div>
+          </div>
+          <div class="stat">
+            <div><span class="stat-num" data-value="50">0</span><span class="stat-suffix">k+</span></div>
+            <div class="stat-label">服务用户</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 滚动驱动大字 ============ -->
+  <div class="marquee" aria-hidden="true">
+    <div class="marquee-inner">
+      <span>BUILD</span><span class="hollow">·</span><span>SHIP</span><span class="hollow">·</span><span>ITERATE</span><span class="hollow">·</span><span>BUILD</span><span class="hollow">·</span><span>SHIP</span><span class="hollow">·</span><span>ITERATE</span><span class="hollow">·</span>
+    </div>
+  </div>
+
+  <!-- ============ 项目 ============ -->
+  <section id="projects">
+    <div class="wrap">
+      <p class="kicker" data-reveal>02 · 精选项目</p>
+      <h2 data-split>一些我做过并<span class="grad-text">持续维护</span>的东西</h2>
+      <!-- ✏️ 项目卡片：按需增删，保持 class="project-card" 即可获得入场动画 -->
+      <div class="project-grid">
+        <article class="project-card">
+          <span class="card-index">/ 01</span>
+          <h3>AI 内容优化引擎</h3>
+          <p>面向长篇小说与新媒体文本的「去 AI 味」检测与改写工具，规则引擎 + 大模型双通道，逐句定位 AI 痕迹并给出改写建议。</p>
+          <div class="tags"><span class="tag">Node.js</span><span class="tag">LLM</span><span class="tag">规则引擎</span></div>
+          <a class="card-link" href="#contact">了解更多 →</a>
+        </article>
+        <article class="project-card">
+          <span class="card-index">/ 02</span>
+          <h3>亚马逊选品洞察插件</h3>
+          <p>Chrome 浏览器扩展，在亚马逊商品页直接聚合评论洞察、关键词与市场数据，帮跨境卖家把选品决策从几小时压缩到几分钟。</p>
+          <div class="tags"><span class="tag">Chrome Extension</span><span class="tag">JS</span><span class="tag">数据分析</span></div>
+          <a class="card-link" href="#contact">了解更多 →</a>
+        </article>
+        <article class="project-card">
+          <span class="card-index">/ 03</span>
+          <h3>AI 答题应用</h3>
+          <p>Next.js 全栈应用：限时答题、AI 生成个性化反馈，内置配额与兑换码体系，从数据库到支付链路完整闭环。</p>
+          <div class="tags"><span class="tag">Next.js</span><span class="tag">Prisma</span><span class="tag">TypeScript</span></div>
+          <a class="card-link" href="#contact">了解更多 →</a>
+        </article>
+        <article class="project-card">
+          <span class="card-index">/ 04</span>
+          <h3>双端小程序矩阵</h3>
+          <p>微信 + 抖音双平台小程序，内容模板化复用、一稿双端发布，验证快速起量的增长打法。</p>
+          <div class="tags"><span class="tag">微信小程序</span><span class="tag">抖音小程序</span><span class="tag">增长</span></div>
+          <a class="card-link" href="#contact">了解更多 →</a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 技能 ============ -->
+  <section id="skills">
+    <div class="wrap">
+      <p class="kicker" data-reveal>03 · 技术栈</p>
+      <h2 data-split>日常使用的<span class="grad-text">工具箱</span></h2>
+      <!-- ✏️ 技能列表，按需增删 -->
+      <div class="chips">
+        <span class="chip">TypeScript</span>
+        <span class="chip">React / Next.js</span>
+        <span class="chip">Node.js</span>
+        <span class="chip">Prisma / PostgreSQL</span>
+        <span class="chip">Python</span>
+        <span class="chip">AI / LLM 应用</span>
+        <span class="chip">微信小程序</span>
+        <span class="chip">抖音小程序</span>
+        <span class="chip">Chrome 扩展</span>
+        <span class="chip">GSAP 动效</span>
+        <span class="chip">SEO / 增长</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 联系 ============ -->
+  <section id="contact" class="contact">
+    <div class="wrap">
+      <p class="kicker" data-reveal>04 · 联系我</p>
+      <h2 data-split>有想法？来<span class="grad-text">聊聊</span></h2>
+      <p class="lead" data-reveal>项目合作、技术咨询，或者只是打个招呼——都在这里。</p>
+      <!-- ✏️ 换成你的真实链接和邮箱 -->
+      <div class="contact-actions" data-reveal>
+        <a class="btn btn-primary" href="mailto:hello@example.com">发邮件给我</a>
+        <a class="btn btn-ghost" href="https://github.com/lyt123422" target="_blank" rel="noopener">GitHub</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">© 2026 LYT · 由 <span class="mono">GSAP</span> 驱动的动效 · 手写于 ZCode</div>
+</footer>
+
+<!-- GSAP v3.13+：所有插件（含 SplitText）均已免费公开 -->
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollToPlugin.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/SplitText.min.js"></script>
+
+<script>
+(function () {
+  "use strict";
+  // CDN 不可达时直接展示静态版，不做动画
+  if (!window.gsap) return;
+  var gsap = window.gsap;
+  var ScrollTrigger = window.ScrollTrigger;
+  var SplitText = window.SplitText;
+
+  gsap.registerPlugin(ScrollTrigger, SplitText, window.ScrollToPlugin);
+  gsap.defaults({ duration: 0.8, ease: "power3.out" });
+
+  // 顶部滚动进度条（scrub 绑定滚动进度）
+  gsap.to(".progress", {
+    scaleX: 1,
+    ease: "none",
+    scrollTrigger: { start: 0, end: "max", scrub: 0.3 }
+  });
+
+  var mm = gsap.matchMedia();
+
+  mm.add({
+    isDesktop: "(min-width: 800px)",
+    reduceMotion: "(prefers-reduced-motion: reduce)"
+  }, function (ctx) {
+    var c = ctx.conditions;
+    var cleanups = [];
+
+    // 背景光斑：桌面端缓浮 + 鼠标视差（quickTo 高频更新）
+    if (c.isDesktop && !c.reduceMotion) {
+      var float1 = gsap.to(".orb-1", { x: 90, y: 60, duration: 10, yoyo: true, repeat: -1, ease: "sine.inOut" });
+      var float2 = gsap.to(".orb-2", { x: -80, y: -60, duration: 12, yoyo: true, repeat: -1, ease: "sine.inOut" });
+      var x1 = gsap.quickTo(".orb-1", "x", { duration: 0.7, ease: "power3.out" });
+      var y1 = gsap.quickTo(".orb-1", "y", { duration: 0.7, ease: "power3.out" });
+      var x2 = gsap.quickTo(".orb-2", "x", { duration: 0.9, ease: "power3.out" });
+      var y2 = gsap.quickTo(".orb-2", "y", { duration: 0.9, ease: "power3.out" });
+      var onMove = function (e) {
+        var nx = e.clientX / window.innerWidth - 0.5;
+        var ny = e.clientY / window.innerHeight - 0.5;
+        x1(nx * 46); y1(ny * 34);
+        x2(nx * -56); y2(ny * -40);
+      };
+      window.addEventListener("mousemove", onMove);
+      cleanups.push(function () { window.removeEventListener("mousemove", onMove); });
+    }
+
+    // 用户偏好减少动效：保持静态完整呈现
+    if (c.reduceMotion) {
+      return function () { cleanups.forEach(function (fn) { fn(); }); };
+    }
+
+    /* ---------- Hero 入场 ---------- */
+    // 第一行逐字升起（SplitText + mask；autoSplit 在重排时自动重建）
+    if (SplitText) {
+      SplitText.create(".ht-line1", {
+        type: "chars",
+        mask: "chars",
+        autoSplit: true,
+        onSplit: function (self) {
+          return gsap.from(self.chars, {
+            yPercent: 120,
+            autoAlpha: 0,
+            stagger: 0.045,
+            duration: 1,
+            ease: "power4.out"
+          });
+        }
+      });
+    }
+
+    var heroTl = gsap.timeline({ delay: 0.15 });
+    heroTl
+      .from(".nav", { yPercent: -110, autoAlpha: 0, duration: 0.7, ease: "power3.out" })
+      .from(".hero-badge", { y: 22, autoAlpha: 0, duration: 0.6 }, "-=0.35")
+      .from(".ht-line2", { yPercent: 125, duration: 1, ease: "power4.out" }, "-=0.3")
+      .from(".hero-sub", { y: 26, autoAlpha: 0, duration: 0.7 }, "-=0.5")
+      .from(".hero-actions .btn", { y: 24, autoAlpha: 0, stagger: 0.12, duration: 0.6 }, "-=0.45")
+      .from(".scroll-hint", { autoAlpha: 0, duration: 0.8 }, "-=0.2");
+
+    /* ---------- 滚动入场：段落 / 小标签 ---------- */
+    gsap.utils.toArray("[data-reveal]").forEach(function (el) {
+      gsap.from(el, {
+        y: 34,
+        autoAlpha: 0,
+        duration: 0.9,
+        scrollTrigger: { trigger: el, start: "top 88%", once: true }
+      });
+    });
+
+    /* ---------- 标题分行揭示 ---------- */
+    gsap.utils.toArray("[data-split]").forEach(function (el) {
+      if (!SplitText) return;
+      SplitText.create(el, {
+        type: "lines",
+        mask: "lines",
+        autoSplit: true,
+        onSplit: function (self) {
+          return gsap.from(self.lines, {
+            yPercent: 115,
+            autoAlpha: 0,
+            stagger: 0.14,
+            duration: 0.9,
+            ease: "power4.out",
+            scrollTrigger: { trigger: el, start: "top 85%", once: true }
+          });
+        }
+      });
+    });
+
+    /* ---------- 项目卡片：batch 批量交错入场 ---------- */
+    var cards = gsap.utils.toArray(".project-card");
+    gsap.set(cards, { y: 52, autoAlpha: 0 });
+    ScrollTrigger.batch(cards, {
+      start: "top 88%",
+      once: true,
+      onEnter: function (batch) {
+        gsap.to(batch, { y: 0, autoAlpha: 1, stagger: 0.12, overwrite: true });
+      }
+    });
+
+    /* ---------- 技能 chip：弹性缩放入场 ---------- */
+    var chips = gsap.utils.toArray(".chip");
+    gsap.set(chips, { scale: 0.7, autoAlpha: 0 });
+    ScrollTrigger.batch(chips, {
+      start: "top 92%",
+      once: true,
+      onEnter: function (batch) {
+        gsap.to(batch, { scale: 1, autoAlpha: 1, stagger: 0.05, ease: "back.out(1.7)", overwrite: true });
+      }
+    });
+
+    /* ---------- 数字滚动统计 ---------- */
+    gsap.utils.toArray(".stat-num").forEach(function (el) {
+      var end = parseFloat(el.getAttribute("data-value")) || 0;
+      var obj = { v: 0 };
+      gsap.to(obj, {
+        v: end,
+        duration: 1.6,
+        ease: "power2.out",
+        onUpdate: function () { el.textContent = Math.round(obj.v); },
+        scrollTrigger: { trigger: el, start: "top 88%", once: true }
+      });
+    });
+
+    /* ---------- 大字横向视差（scrub 绑定滚动） ---------- */
+    gsap.to(".marquee-inner", {
+      xPercent: -28,
+      ease: "none",
+      scrollTrigger: { trigger: ".marquee", start: "top bottom", end: "bottom top", scrub: true }
+    });
+
+    /* ---------- 导航锚点平滑滚动 ---------- */
+    document.querySelectorAll('a[href^="#"]').forEach(function (link) {
+      var handler = function (e) {
+        var id = link.getAttribute("href");
+        if (id.length > 1 && document.querySelector(id)) {
+          e.preventDefault();
+          gsap.to(window, {
+            duration: 1,
+            ease: "power2.inOut",
+            scrollTo: { y: id, offsetY: 64 }
+          });
+        }
+      };
+      link.addEventListener("click", handler);
+      cleanups.push(function () { link.removeEventListener("click", handler); });
+    });
+
+    return function () { cleanups.forEach(function (fn) { fn(); }); };
+  });
+
+  // 字体/布局稳定后校准触发位置
+  window.addEventListener("load", function () { ScrollTrigger.refresh(); });
+})();
+</script>
+</body>
+</html>
