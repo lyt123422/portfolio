@@ -25,7 +25,7 @@
 <meta name="twitter:description" content="Landing pages, frontend fixes, and Python automation — tested before delivery." />
 <meta name="twitter:image" content="https://lyt123422.github.io/portfolio/og-image.png" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"Person","name":"Yati Liao","url":"https://lyt123422.github.io/portfolio/en/","jobTitle":"Freelance Web Developer","sameAs":["https://github.com/lyt123422"]}
+{"@context":"https://schema.org","@type":"Person","name":"Yati Liao","url":"https://lyt123422.github.io/portfolio/en/","email":"mailto:lyt502277@gmail.com","jobTitle":"Freelance Web Developer","sameAs":["https://github.com/lyt123422"]}
 </script>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%236366f1'/><stop offset='1' stop-color='%2322d3ee'/></linearGradient></defs><rect width='64' height='64' rx='14' fill='url(%23g)'/><text x='32' y='44' font-size='30' font-family='monospace' font-weight='bold' text-anchor='middle' fill='white'>L</text></svg>" />
 <style>
@@ -201,7 +201,24 @@
   .contact { text-align: center; }
   .contact h2 { font-size: clamp(2.2rem, 5.5vw, 3.6rem); }
   .contact .lead { margin: 0 auto 36px; }
-  .contact-actions { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+  .contact-grid { display: flex; gap: 18px; justify-content: center; flex-wrap: wrap; margin-top: 6px; }
+  .contact-card {
+    min-width: 260px; max-width: 320px; border: 1px solid var(--line); border-radius: 16px;
+    background: var(--card); padding: 20px 22px; text-align: left; text-decoration: none;
+    color: var(--fg); position: relative;
+    transition: transform .25s ease, border-color .25s ease; will-change: transform;
+  }
+  .contact-card:hover { transform: translateY(-4px); border-color: rgba(99, 102, 241, 0.5); }
+  .cc-label { font-family: Consolas, monospace; font-size: .72rem; letter-spacing: 2px;
+    color: var(--accent-2); text-transform: uppercase; }
+  .cc-value { margin-top: 6px; font-size: .95rem; font-weight: 600; word-break: break-all; }
+  .cc-hint { margin-top: 4px; color: var(--muted); font-size: .78rem; }
+  .copy-btn {
+    position: absolute; top: 14px; right: 14px; border: 1px solid var(--line); background: transparent;
+    color: var(--muted); border-radius: 8px; padding: 4px 9px; font-size: .7rem; cursor: pointer;
+    font-family: Consolas, monospace; letter-spacing: 1px; transition: color .2s, border-color .2s;
+  }
+  .copy-btn:hover { color: var(--fg); border-color: rgba(255, 255, 255, 0.3); }
   footer { border-top: 1px solid var(--line); padding: 30px 0; text-align: center;
     color: var(--muted); font-size: 0.82rem; }
   footer .mono { font-family: Consolas, monospace; }
@@ -361,10 +378,24 @@
       <p class="kicker" data-reveal>04 · Contact</p>
       <h2 data-split>Got an idea? <span class="grad-text">Let's talk</span></h2>
       <p class="lead" data-reveal>Project work, consulting, or just to say hi — I'm one click away.</p>
-      <!-- ✏️ Replace with your real links and email -->
-      <div class="contact-actions" data-reveal>
-        <a class="btn btn-primary" href="mailto:lyt502277@gmail.com">Email me</a>
-        <a class="btn btn-ghost" href="https://github.com/lyt123422" target="_blank" rel="noopener">GitHub</a>
+      <!-- ✏️ Contact info — email matches the Upwork account -->
+      <div class="contact-grid" data-reveal>
+        <a class="contact-card" href="mailto:lyt502277@gmail.com">
+          <span class="copy-btn" data-copy="lyt502277@gmail.com">COPY</span>
+          <span class="cc-label">Email</span>
+          <div class="cc-value">lyt502277@gmail.com</div>
+          <div class="cc-hint">Replies within 24h · UTC+8</div>
+        </a>
+        <a class="contact-card" href="https://github.com/lyt123422" target="_blank" rel="noopener">
+          <span class="cc-label">GitHub</span>
+          <div class="cc-value">github.com/lyt123422</div>
+          <div class="cc-hint">Source code &amp; projects</div>
+        </a>
+        <div class="contact-card">
+          <span class="cc-label">Location</span>
+          <div class="cc-value">China · UTC+8</div>
+          <div class="cc-hint">Remote work worldwide</div>
+        </div>
       </div>
     </div>
   </section>
@@ -383,6 +414,33 @@
 <script>
 (function () {
   "use strict";
+
+  // Copy-email buttons — independent of GSAP so they work even if the CDN fails
+  document.querySelectorAll(".copy-btn").forEach(function (btn) {
+    btn.addEventListener("click", function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      var text = btn.getAttribute("data-copy");
+      var done = function () {
+        btn.textContent = "COPIED ✓";
+        setTimeout(function () { btn.textContent = "COPY"; }, 1600);
+      };
+      var fallback = function () {
+        var ta = document.createElement("textarea");
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand("copy"); done(); } catch (err) {}
+        document.body.removeChild(ta);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(fallback);
+      } else {
+        fallback();
+      }
+    });
+  });
+
   // If the CDN is unreachable, show the static version without animations
   if (!window.gsap) return;
   var gsap = window.gsap;
